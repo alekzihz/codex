@@ -23,3 +23,11 @@ php public/index.php
 ```
 
 You should see the values from your `.env` file printed to the console.
+
+## Running tests
+
+Execute the PHPUnit suite to verify the configuration loader:
+
+```bash
+vendor/bin/phpunit
+```

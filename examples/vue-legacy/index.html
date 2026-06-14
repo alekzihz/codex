@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue Legacy - Comunicación padre/hijo</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+      }
+
+      main {
+        width: min(680px, calc(100% - 32px));
+        padding: 32px;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+      }
+
+      .card {
+        margin-top: 24px;
+        padding: 20px;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        background: #eff6ff;
+      }
+
+      input,
+      button {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #93c5fd;
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app">
+      <h1>Versión legacy</h1>
+      <p>
+        Este ejemplo usa Vue desde CDN y componentes registrados en JavaScript.
+        El padre pasa <strong>mensaje</strong> al hijo mediante props y el hijo
+        emite <strong>actualizar-mensaje</strong> para cambiar el estado del padre.
+      </p>
+
+      <p><strong>Estado del padre:</strong> {{ mensajeDelPadre }}</p>
+
+      <child-message
+        :mensaje="mensajeDelPadre"
+        @actualizar-mensaje="actualizarMensaje"
+      ></child-message>
+    </main>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+      const { createApp } = Vue;
+
+      const ChildMessage = {
+        props: {
+          mensaje: {
+            type: String,
+            required: true,
+          },
+        },
+        emits: ['actualizar-mensaje'],
+        data() {
+          return {
+            textoLocal: '',
+          };
+        },
+        template: `
+          <section class="card">
+            <h2>Componente hijo</h2>
+            <p>Dato recibido desde el padre: <strong>{{ mensaje }}</strong></p>
+            <form @submit.prevent="enviarAlPadre">
+              <input
+                v-model="textoLocal"
+                type="text"
+                placeholder="Nuevo mensaje para el padre"
+              />
+              <button type="submit">Enviar al padre</button>
+            </form>
+          </section>
+        `,
+        methods: {
+          enviarAlPadre() {
+            const nuevoMensaje = this.textoLocal.trim();
+
+            if (!nuevoMensaje) {
+              return;
+            }
+
+            this.$emit('actualizar-mensaje', nuevoMensaje);
+            this.textoLocal = '';
+          },
+        },
+      };
+
+      createApp({
+        components: {
+          ChildMessage,
+        },
+        data() {
+          return {
+            mensajeDelPadre: 'Hola desde el padre legacy',
+          };
+        },
+        methods: {
+          actualizarMensaje(nuevoMensaje) {
+            this.mensajeDelPadre = nuevoMensaje;
+          },
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>
